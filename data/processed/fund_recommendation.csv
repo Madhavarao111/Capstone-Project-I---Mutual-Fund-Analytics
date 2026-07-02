@@ -1,0 +1,4 @@
+amfi_code,fund_house,scheme_name,category,sub_category,plan,launch_date,benchmark,expense_ratio_pct,exit_load_pct,min_sip_amount,min_lumpsum_amount,fund_manager,risk_category,sebi_category_code,mean,std,sharpe_ratio
+148569,Mirae Asset MF,Mirae Asset Tax Saver Fund - Regular - Growth,Equity,ELSS,Regular,2015-12-28,NIFTY 500 TRI,1.6,1.0,500,1000,Neelesh Surana,High,EC05,0.0011240540293206,0.0111335777084273,1.2349300257743292
+120505,ICICI Prudential MF,ICICI Pru Midcap Fund - Regular - Growth,Equity,Mid Cap,Regular,2004-10-28,NIFTY Midcap 150 TRI,1.36,1.0,500,1000,Sankaran Naren,High,EC02,0.0011613203372383,0.0121521558770111,1.18010119766065
+149323,DSP Mutual Fund,DSP Midcap Fund - Regular - Growth,Equity,Mid Cap,Regular,2006-11-16,NIFTY Midcap 150 TRI,1.61,1.0,500,1000,Vinit Sambre,High,EC02,0.0010551910655344,0.011179029641055,1.1321218524747254
