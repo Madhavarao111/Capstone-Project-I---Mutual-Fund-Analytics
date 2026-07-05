@@ -1,38 +1,61 @@
+from pathlib import Path
 from sqlalchemy import create_engine, text
 import pandas as pd
 
-# Create SQLite database connection
-engine = create_engine(
-    "sqlite:///bluestock_mf.db"
-)
+# ==========================================
+# Project Paths
+# ==========================================
 
-# ==========================
+BASE_DIR = Path(__file__).resolve().parent
+
+DATA_DIR = BASE_DIR / "data"
+
+RAW_DIR = DATA_DIR / "raw" / "Bluestock_MF_Datasets"
+
+PROCESSED_DIR = DATA_DIR / "processed"
+
+DB_DIR = DATA_DIR / "db"
+DB_DIR.mkdir(parents=True, exist_ok=True)
+
+DB_PATH = DB_DIR / "bluestock_mf.db"
+
+# ==========================================
+# Create SQLite Connection
+# ==========================================
+
+engine = create_engine(f"sqlite:///{DB_PATH}")
+
+# ==========================================
 # Read CSV Files
-# ==========================
+# ==========================================
+
+print("Loading CSV files...\n")
 
 fund = pd.read_csv(
-    "data/raw/Bluestock_MF_Datasets/01_fund_master.csv"
+    RAW_DIR / "01_fund_master.csv"
 )
 
 nav = pd.read_csv(
-    "data/processed/nav_history_clean.csv"
+    PROCESSED_DIR / "nav_history_clean.csv"
 )
 
 transactions = pd.read_csv(
-    "data/processed/investor_transactions_clean.csv"
+    PROCESSED_DIR / "investor_transactions_clean.csv"
 )
 
 performance = pd.read_csv(
-    "data/processed/scheme_performance_clean.csv"
+    PROCESSED_DIR / "scheme_performance_clean.csv"
 )
 
 aum = pd.read_csv(
-    "data/raw/Bluestock_MF_Datasets/03_aum_by_fund_house.csv"
+    RAW_DIR / "03_aum_by_fund_house.csv"
 )
 
-# ==========================
-# Load into SQLite
-# ==========================
+# ==========================================
+# Load Data into SQLite
+# ==========================================
+
+print("Loading data into SQLite...\n")
 
 fund.to_sql(
     "dim_fund",
@@ -71,60 +94,50 @@ aum.to_sql(
 
 print("All datasets loaded successfully!")
 
-# ==========================
+# ==========================================
 # Verify CSV Row Counts
-# ==========================
+# ==========================================
 
 print("\nCSV Row Counts")
-print("--------------------------")
-print("dim_fund:", len(fund))
-print("fact_nav:", len(nav))
-print("fact_transactions:", len(transactions))
-print("fact_performance:", len(performance))
-print("fact_aum:", len(aum))
+print("-" * 35)
 
-# ==========================
+print(f"dim_fund          : {len(fund)}")
+print(f"fact_nav          : {len(nav)}")
+print(f"fact_transactions : {len(transactions)}")
+print(f"fact_performance  : {len(performance)}")
+print(f"fact_aum          : {len(aum)}")
+
+# ==========================================
 # Verify Database Row Counts
-# ==========================
+# ==========================================
 
 print("\nDatabase Row Counts")
-print("--------------------------")
+print("-" * 35)
 
 with engine.connect() as conn:
 
-    print(
-        "dim_fund:",
-        conn.execute(
-            text("SELECT COUNT(*) FROM dim_fund")
-        ).scalar()
-    )
+    tables = [
+        "dim_fund",
+        "fact_nav",
+        "fact_transactions",
+        "fact_performance",
+        "fact_aum"
+    ]
 
-    print(
-        "fact_nav:",
-        conn.execute(
-            text("SELECT COUNT(*) FROM fact_nav")
-        ).scalar()
-    )
+    for table in tables:
 
-    print(
-        "fact_transactions:",
-        conn.execute(
-            text("SELECT COUNT(*) FROM fact_transactions")
+        count = conn.execute(
+            text(f"SELECT COUNT(*) FROM {table}")
         ).scalar()
-    )
 
-    print(
-        "fact_performance:",
-        conn.execute(
-            text("SELECT COUNT(*) FROM fact_performance")
-        ).scalar()
-    )
+        print(f"{table:<18}: {count}")
 
-    print(
-        "fact_aum:",
-        conn.execute(
-            text("SELECT COUNT(*) FROM fact_aum")
-        ).scalar()
-    )
+# ==========================================
+# Show Database Information
+# ==========================================
+
+print("\nDatabase File")
+print("-" * 35)
+print(DB_PATH)
 
 print("\nSQLite Database Loaded Successfully!")
